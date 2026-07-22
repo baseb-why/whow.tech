@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>whow</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#050510;user-select:none;-webkit-user-select:none}
+body{font-family:'Inter',sans-serif;color:#fff;cursor:grab;animation:pageIn 1.8s ease-out}
+body:active{cursor:grabbing}
+@keyframes pageIn{from{opacity:0}to{opacity:1}}
+
+canvas#c{position:fixed;inset:0;z-index:1;touch-action:none}
+
+.ov{position:fixed;inset:0;z-index:10;pointer-events:none}
+.ov::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 35%,rgba(5,5,16,.65) 100%);pointer-events:none}
+
+.logo{position:absolute;top:30px;left:32px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.5rem;letter-spacing:-.03em;transition:transform .4s ease-out}
+.logo i{color:#ff2d95;font-style:normal;position:relative;display:inline-block}
+.logo i::before,.logo i::after{content:'w';position:absolute;top:0;left:0}
+.logo i::before{color:#00d4ff;animation:gl1 4s infinite linear alternate-reverse}
+.logo i::after{color:#ff2d95;animation:gl2 3s infinite linear alternate-reverse}
+@keyframes gl1{0%,90%,100%{clip-path:inset(0);transform:translate(0)}92%{clip-path:inset(25% 0 40% 0);transform:translate(-2px,1px)}95%{clip-path:inset(55% 0 15% 0);transform:translate(2px,-1px)}}
+@keyframes gl2{0%,88%,100%{clip-path:inset(0);transform:translate(0)}90%{clip-path:inset(40% 0 25% 0);transform:translate(2px,-1px)}94%{clip-path:inset(10% 0 55% 0);transform:translate(-2px,1px)}}
+
+.tr{position:absolute;top:30px;right:32px;text-align:right;transition:transform .4s ease-out}
+.tr .lb{font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.25);margin-bottom:3px}
+.tr .vl{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:600;color:rgba(255,255,255,.7)}
+
+.bl{position:absolute;bottom:36px;left:32px;max-width:380px;transition:transform .4s ease-out}
+.bl h2{font-family:'Space Grotesk',sans-serif;font-size:1.9rem;font-weight:700;line-height:1.05;letter-spacing:-.03em;margin-bottom:10px}
+.bl h2 .pk{color:#ff2d95}
+.bl p{font-size:.8rem;color:rgba(255,255,255,.35);line-height:1.6}
+
+.br{position:absolute;bottom:36px;right:32px;text-align:right;transition:transform .4s ease-out}
+.hint{font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.2);margin-bottom:10px}
+.sp{display:flex;flex-direction:column;gap:5px}
+.sr{display:flex;align-items:center;justify-content:flex-end;gap:14px}
+.sl{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.22)}
+.sv{font-family:'Space Grotesk',sans-serif;font-size:.85rem;font-weight:600}
+.sv.pk{color:#ff2d95}.sv.bl2{color:#00d4ff}.sv.gn{color:#39ff14}.sv.pr{color:#b14aed}
+
+.fe{position:absolute;font-size:1.3rem;opacity:.12;pointer-events:none;animation:efloat linear infinite}
+@keyframes efloat{0%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-18px) rotate(8deg)}100%{transform:translateY(0) rotate(0deg)}}
+
+@media(max-width:768px){
+  .bl{bottom:20px;left:18px;max-width:260px}
+  .bl h2{font-size:1.3rem}
+  .bl p{font-size:.7rem}
+  .br,.tr{display:none}
+  .logo{top:18px;left:18px;font-size:1.2rem}
+  .fe{display:none}
+}
+</style>
+</head>
+<body>
+
+<canvas id="c"></canvas>
+
+<div class="ov">
+  <div class="logo" data-s="0.02"><i>w</i>how</div>
+
+  <div class="tr" data-s="0.04">
+    <div class="lb">model</div>
+    <div class="vl">the slay machine™</div>
+  </div>
+
+  <div class="bl" data-s="0.03">
+    <h2>this car has more <span class="pk">rizz</span> than your entire team</h2>
+    <p>no cap 0-60 faster than your ex moved on. built different fr fr 💀</p>
+  </div>
+
+  <div class="br" data-s="0.05">
+    <div class="hint">drag to rotate bestie</div>
+    <div class="sp">
+      <div class="sr"><span class="sl">power</span><span class="sv pk">slay hp</span></div>
+      <div class="sr"><span class="sl">0-60</span><span class="sv bl2">idk fast</span></div>
+      <div class="sr"><span class="sl">vibe</span><span class="sv gn">immaculate</span></div>
+      <div class="sr"><span class="sl">cap</span><span class="sv pr">none</span></div>
+    </div>
+  </div>
+
+  <div class="fe" style="top:14%;left:68%;animation-duration:4.2s;animation-delay:0s">🔥</div>
+  <div class="fe" style="top:58%;left:12%;animation-duration:5.1s;animation-delay:-1s">💅</div>
+  <div class="fe" style="top:22%;left:22%;animation-duration:5.8s;animation-delay:-2s">🚀</div>
+  <div class="fe" style="top:72%;left:78%;animation-duration:4.6s;animation-delay:-3s">✨</div>
+  <div class="fe" style="top:42%;left:88%;animation-duration:3.8s;animation-delay:-1.5s">💀</div>
+  <div class="fe" style="top:82%;left:42%;animation-duration:5.4s;animation-delay:-2.5s">🏆</div>
+</div>
+
+<script type="module">
+import * as THREE from 'three';
+
+/* ── renderer ── */
+const canvas = document.getElementById('c');
+const R = new THREE.WebGLRenderer({ canvas, antialias: true });
+R.setSize(innerWidth, innerHeight);
+R.setPixelRatio(Math.min(devicePixelRatio, 2));
+R.toneMapping = THREE.ACESFilmicToneMapping;
+R.toneMappingExposure = 1.1;
+
+/* ── scene ── */
+const S = new THREE.Scene();
+S.background = new THREE.Color(0x050510);
+S.fog = new THREE.Fog(0x050510, 14, 34);
+
+/* ── camera ── */
+const cam = new THREE.PerspectiveCamera(38, innerWidth / innerHeight, 0.1, 100);
+cam.position.set(6.5, 3.2, 6.5);
+cam.lookAt(0, 0.7, 0);
+
+/* ── lights ── */
+S.add(new THREE.AmbientLight(0x111125, 0.7));
+
+const key = new THREE.DirectionalLight(0xffffff, 1.4);
+key.position.set(5, 8, 4);
+S.add(key);
+
+const pinkL = new THREE.PointLight(0xff2d95, 3, 13);
+pinkL.position.set(-4, 2, 3);
+S.add(pinkL);
+
+const blueL = new THREE.PointLight(0x00d4ff, 3, 13);
+blueL.position.set(4, 2, -3);
+S.add(blueL);
+
+const ugBlue = new THREE.PointLight(0x00d4ff, 5, 6);
+ugBlue.position.set(0, 0.08, 0);
+S.add(ugBlue);
+
+const ugPink = new THREE.PointLight(0xff2d95, 3, 5);
+ugPink.position.set(0, 0.05, 0);
+S.add(ugPink);
+
+const spot = new THREE.SpotLight(0xffffff, 2.5, 22, Math.PI / 5, 0.6);
+spot.position.set(0, 11, 0);
+spot.target.position.set(0, 0, 0);
+S.add(spot, spot.target);
+
+/* ── ground ── */
+const gnd = new THREE.Mesh(
+  new THREE.PlaneGeometry(60, 60),
+  new THREE.MeshStandardMaterial({ color: 0x080818, metalness: 0.85, roughness: 0.35 })
+);
+gnd.rotation.x = -Math.PI / 2;
+gnd.position.y = -0.01;
+S.add(gnd);
+
+const grid = new THREE.GridHelper(40, 80, 0x1a1a40, 0x0c0c1e);
+S.add(grid);
+
+/* ── car ── */
+const car = new THREE.Group();
+
+const bodyMat = new THREE.MeshStandardMaterial({ color: 0x101028, metalness: 0.92, roughness: 0.12 });
+const darkMat = new THREE.MeshStandardMaterial({ color: 0x0a0a18, metalness: 0.8, roughness: 0.3 });
+
+// body lower
+const bLow = new THREE.Mesh(new THREE.BoxGeometry(4.4, 0.7, 2), bodyMat);
+bLow.position.y = 0.55;
+car.add(bLow);
+
+// body upper trim
+const bUp = new THREE.Mesh(new THREE.BoxGeometry(4.4, 0.28, 1.92), bodyMat);
+bUp.position.y = 1.04;
+car.add(bUp);
+
+// cabin
+const cab = new THREE.Mesh(new THREE.BoxGeometry(2, 0.82, 1.72), darkMat);
+cab.position.set(-0.1, 1.58, 0);
+car.add(cab);
+
+// neon edges
+const ePink = new THREE.LineBasicMaterial({ color: 0xff2d95, transparent: true, opacity: 0.55 });
+const eCyan = new THREE.LineBasicMaterial({ color: 0x00d4ff, transparent: true, opacity: 0.35 });
+function edges(mesh, mat) {
+  const l = new THREE.LineSegments(new THREE.EdgesGeometry(mesh.geometry), mat);
+  l.position.copy(mesh.position);
+  l.rotation.copy(mesh.rotation);
+  car.add(l);
+}
+edges(bLow, ePink);
+edges(bUp, eCyan);
+edges(cab, ePink);
+
+// windows
+const winMat = new THREE.MeshStandardMaterial({ color: 0x00d4ff, transparent: true, opacity: 0.12, metalness: 1, roughness: 0 });
+
+const wsGeo = new THREE.PlaneGeometry(0.72, 1.55);
+const ws = new THREE.Mesh(wsGeo, winMat);
+ws.position.set(0.88, 1.53, 0);
+ws.rotation.set(0.22, Math.PI / 2, 0);
+car.add(ws);
+
+const rw = new THREE.Mesh(wsGeo, winMat);
+rw.position.set(-1.08, 1.53, 0);
+rw.rotation.set(-0.22, -Math.PI / 2, 0);
+car.add(rw);
+
+const swGeo = new THREE.PlaneGeometry(1.8, 0.6);
+const swL = new THREE.Mesh(swGeo, winMat);
+swL.position.set(-0.1, 1.62, 0.87);
+car.add(swL);
+const swR = new THREE.Mesh(swGeo, winMat);
+swR.position.set(-0.1, 1.62, -0.87);
+swR.rotation.y = Math.PI;
+car.add(swR);
+
+// wheels
+const wheels = [];
+const wGeo = new THREE.CylinderGeometry(0.34, 0.34, 0.24, 24);
+const wMat = new THREE.MeshStandardMaterial({ color: 0x080808, metalness: 0.3, roughness: 0.8 });
+const rGeo = new THREE.TorusGeometry(0.21, 0.028, 8, 16);
+const rMat = new THREE.MeshStandardMaterial({ color: 0x00d4ff, emissive: 0x00d4ff, emissiveIntensity: 0.6, metalness: 0.9, roughness: 0.1 });
+const hGeo = new THREE.CylinderGeometry(0.14, 0.14, 0.26, 6);
+const hMat = new THREE.MeshStandardMaterial({ color: 0x14142a, metalness: 0.8, roughness: 0.2 });
+
+[[1.4,.34,1.08],[1.4,.34,-1.08],[-1.4,.34,1.08],[-1.4,.34,-1.08]].forEach(p => {
+  const g = new THREE.Group();
+  const w = new THREE.Mesh(wGeo, wMat); w.rotation.x = Math.PI / 2; g.add(w);
+  const r = new THREE.Mesh(rGeo, rMat); r.rotation.x = Math.PI / 2; g.add(r);
+  const h = new THREE.Mesh(hGeo, hMat); h.rotation.x = Math.PI / 2; g.add(h);
+  g.position.set(...p);
+  car.add(g);
+  wheels.push(g);
+});
+
+// headlights
+const hlG = new THREE.BoxGeometry(0.07, 0.16, 0.32);
+const hlM = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 3 });
+[0.62, -0.62].forEach(z => {
+  const hl = new THREE.Mesh(hlG, hlM);
+  hl.position.set(2.24, 0.65, z);
+  car.add(hl);
+  const glow = new THREE.Mesh(new THREE.SphereGeometry(0.12, 8, 8), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.25 }));
+  glow.position.set(2.34, 0.65, z);
+  car.add(glow);
+});
+
+// taillights
+const tlM = new THREE.MeshStandardMaterial({ color: 0xff0033, emissive: 0xff0044, emissiveIntensity: 2 });
+[0.58, -0.58].forEach(z => {
+  const tl = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.13, 0.38), tlM);
+  tl.position.set(-2.24, 0.65, z);
+  car.add(tl);
+});
+
+// spoiler
+const spWing = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.035, 1.75), darkMat);
+spWing.position.set(-2.05, 1.6, 0);
+car.add(spWing);
+edges(spWing, new THREE.LineBasicMaterial({ color: 0xff2d95, transparent: true, opacity: 0.7 }));
+
+[0.62, -0.62].forEach(z => {
+  const sup = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.32, 0.05), darkMat);
+  sup.position.set(-2.05, 1.42, z);
+  car.add(sup);
+});
+
+// splitter
+const split = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.035, 2.08), darkMat);
+split.position.set(2.1, 0.17, 0);
+car.add(split);
+
+// side skirts
+[1.02, -1.02].forEach(z => {
+  const sk = new THREE.Mesh(new THREE.BoxGeometry(3.2, 0.1, 0.06), darkMat);
+  sk.position.set(0, 0.2, z);
+  car.add(sk);
+});
+
+// underglow strips
+const ugMat = new THREE.MeshBasicMaterial({ color: 0x00d4ff, transparent: true, opacity: 0.45 });
+[0.78, -0.78].forEach(z => {
+  const s = new THREE.Mesh(new THREE.BoxGeometry(3.6, 0.015, 0.06), ugMat);
+  s.position.set(0, 0.11, z);
+  car.add(s);
+});
+const ugF = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.015, 1.55), ugMat.clone());
+ugF.material.opacity = 0.3;
+ugF.position.set(1.8, 0.11, 0);
+car.add(ugF);
+const ugB = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.015, 1.55), new THREE.MeshBasicMaterial({ color: 0xff2d95, transparent: true, opacity: 0.25 }));
+ugB.position.set(-1.8, 0.11, 0);
+car.add(ugB);
+
+// front accent line
+const fLine = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.02, 1.6), new THREE.MeshBasicMaterial({ color: 0x00d4ff, transparent: true, opacity: 0.5 }));
+fLine.position.set(2.21, 0.9, 0);
+car.add(fLine);
+
+S.add(car);
+
+/* ── particles ── */
+const pts = [];
+const ptGeo = new THREE.OctahedronGeometry(0.035, 0);
+const ptMats = [0xff2d95, 0x00d4ff, 0xb14aed, 0x39ff14].map(c => new THREE.MeshBasicMaterial({ color: c }));
+for (let i = 0; i < 55; i++) {
+  const m = new THREE.Mesh(ptGeo, ptMats[i % 4]);
+  const a = Math.random() * Math.PI * 2;
+  const r = 3 + Math.random() * 6;
+  const h = Math.random() * 5;
+  m.position.set(Math.cos(a) * r, h, Math.sin(a) * r);
+  m.userData = { a, r, h, sp: 0.2 + Math.random() * 0.5, ys: 0.3 + Math.random() * 0.5 };
+  S.add(m);
+  pts.push(m);
+}
+
+/* ── interaction ── */
+let drag = false, prev = { x: 0, y: 0 }, vel = { x: 0, y: 0 };
+let autoR = true, autoT = null;
+const autoSpd = 0.004;
+let mx = 0, my = 0;
+
+function down(x, y) { drag = true; autoR = false; clearTimeout(autoT); prev = { x, y }; vel = { x: 0, y: 0 }; }
+function move(x, y) {
+  mx = (x / innerWidth - 0.5) * 2;
+  my = (y / innerHeight - 0.5) * 2;
+  if (!drag) return;
+  vel.y = (x - prev.x) * 0.006;
+  vel.x = (y - prev.y) * 0.004;
+  car.rotation.y += vel.y;
+  car.rotation.x = Math.max(-0.5, Math.min(0.5, car.rotation.x + vel.x));
+  prev = { x, y };
+}
+function up() { drag = false; autoT = setTimeout(() => autoR = true, 2200); }
+
+canvas.addEventListener('mousedown', e => down(e.clientX, e.clientY));
+addEventListener('mousemove', e => move(e.clientX, e.clientY));
+addEventListener('mouseup', up);
+canvas.addEventListener('touchstart', e => { e.preventDefault(); down(e.touches[0].clientX, e.touches[0].clientY); }, { passive: false });
+canvas.addEventListener('touchmove', e => { e.preventDefault(); move(e.touches[0].clientX, e.touches[0].clientY); }, { passive: false });
+canvas.addEventListener('touchend', up);
+
+/* ── parallax ── */
+const pEls = document.querySelectorAll('[data-s]');
+
+/* ── loop ── */
+const clk = new THREE.Clock();
+
+(function loop() {
+  requestAnimationFrame(loop);
+  const t = clk.getElapsedTime();
+
+  // rotation
+  if (!drag && (Math.abs(vel.x) > 0.0002 || Math.abs(vel.y) > 0.0002)) {
+    car.rotation.y += vel.y;
+    car.rotation.x = Math.max(-0.5, Math.min(0.5, car.rotation.x + vel.x));
+    vel.x *= 0.955;
+    vel.y *= 0.955;
+  }
+  if (autoR) car.rotation.y += autoSpd;
+
+  // hover
+  car.position.y = Math.sin(t * 1.5) * 0.04;
+
+  // wheels
+  wheels.forEach(w => { w.children[0].rotation.y += 0.04; w.children[1].rotation.y += 0.04; });
+
+  // underglow pulse
+  ugBlue.intensity = 4 + Math.sin(t * 3) * 2;
+  ugPink.intensity = 2.5 + Math.cos(t * 3) * 1.5;
+
+  // lights drift
+  pinkL.position.x = -4 + Math.sin(t * 0.7) * 2;
+  pinkL.position.z = 3 + Math.cos(t * 0.7) * 2;
+  blueL.position.x = 4 + Math.cos(t * 0.5) * 2;
+  blueL.position.z = -3 + Math.sin(t * 0.5) * 2;
+
+  // particles
+  pts.forEach(p => {
+    const d = p.userData;
+    d.a += d.sp * 0.004;
+    p.position.x = Math.cos(d.a) * d.r;
+    p.position.z = Math.sin(d.a) * d.r;
+    p.position.y = d.h + Math.sin(t * d.ys + d.a) * 0.5;
+    p.rotation.x = t * d.sp;
+    p.rotation.y = t * d.sp * 0.7;
+  });
+
+  // camera breath
+  cam.position.x = 6.5 + Math.sin(t * 0.25) * 0.15;
+  cam.position.z = 6.5 + Math.cos(t * 0.25) * 0.15;
+  cam.lookAt(0, 0.7, 0);
+
+  // parallax
+  pEls.forEach(el => {
+    const s = parseFloat(el.dataset.s);
+    el.style.transform = `translate(${mx * s * 30}px,${my * s * 30}px)`;
+  });
+
+  R.render(S, cam);
+})();
+
+/* ── resize ── */
+addEventListener('resize', () => {
+  cam.aspect = innerWidth / innerHeight;
+  cam.updateProjectionMatrix();
+  R.setSize(innerWidth, innerHeight);
+});
+</script>
+</body>
+</html>
