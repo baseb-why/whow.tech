@@ -53,10 +53,10 @@ canvas#c{position:fixed;inset:0;z-index:1;touch-action:none}
 .fe{position:absolute;font-size:1.3rem;opacity:.12;pointer-events:none;animation:efloat linear infinite}
 @keyframes efloat{0%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-18px) rotate(8deg)}100%{transform:translateY(0) rotate(0deg)}}
 
-/* NEW: floating tag that appears above the door on hover */
+/* floating tag that appears above a door on hover */
 .dtip{position:fixed;left:0;top:0;z-index:12;pointer-events:none;opacity:0;font-family:'Space Grotesk',sans-serif;text-align:center;will-change:transform}
-.dtip .t1{font-size:.55rem;letter-spacing:.3em;text-transform:uppercase;color:#00d4ff;margin-bottom:4px}
-.dtip .t2{display:inline-block;font-size:.8rem;font-weight:700;color:#ff2d95;border:1px solid rgba(255,45,149,.55);padding:7px 16px;background:rgba(5,5,16,.8);letter-spacing:.08em}
+.dtip .t1{font-size:.55rem;letter-spacing:.3em;text-transform:uppercase;margin-bottom:4px}
+.dtip .t2{display:inline-block;font-size:.8rem;font-weight:700;border:1px solid;padding:7px 16px;background:rgba(5,5,16,.8);letter-spacing:.08em}
 
 @media(max-width:768px){
   .bl{bottom:20px;left:18px;max-width:260px}
@@ -101,12 +101,6 @@ canvas#c{position:fixed;inset:0;z-index:1;touch-action:none}
   <div class="fe" style="top:72%;left:78%;animation-duration:4.6s;animation-delay:-3s">✨</div>
   <div class="fe" style="top:42%;left:88%;animation-duration:3.8s;animation-delay:-1.5s">💀</div>
   <div class="fe" style="top:82%;left:42%;animation-duration:5.4s;animation-delay:-2.5s">🏆</div>
-</div>
-
-<!-- NEW: hover tag for the door -->
-<div class="dtip" id="dtip">
-  <div class="t1">whow type</div>
-  <div class="t2">open the door →</div>
 </div>
 
 <script type="module">
@@ -310,41 +304,54 @@ const fLine = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.02, 1.6), new THREE.M
 fLine.position.set(2.21, 0.9, 0);
 car.add(fLine);
 
-/* ── NEW: front door (hover = glow, click = go to whow type) ── */
-const DOOR_URL = 'https://baseb-why.github.io/whow-type/';
-const doorBaseZ = 1.012;
+/* ── NEW: two front doors (hover = glow, click = open each door's link) ── */
+const doorGeo = new THREE.BoxGeometry(1.15, 0.88, 0.035);
+const handleGeo = new THREE.BoxGeometry(0.28, 0.05, 0.024);
+const haloGeo = new THREE.PlaneGeometry(1.55, 1.22);
 
-const doorMat = new THREE.MeshStandardMaterial({
-  color: 0x161634, metalness: 0.94, roughness: 0.14,
-  emissive: 0xff2d95, emissiveIntensity: 0
-});
-const door = new THREE.Mesh(new THREE.BoxGeometry(1.15, 0.88, 0.035), doorMat);
-door.position.set(0.42, 0.74, doorBaseZ);
-car.add(door);
+function makeTag(label, cSub, cBtn) {
+  const el = document.createElement('div');
+  el.className = 'dtip';
+  el.innerHTML = `<div class="t1" style="color:${cSub}">${label}</div>` +
+                 `<div class="t2" style="color:${cBtn};border-color:${cBtn}99">open the door →</div>`;
+  document.body.appendChild(el);
+  return el;
+}
 
-// faint seam outline so people notice the door exists
-const doorEdgeMat = new THREE.LineBasicMaterial({ color: 0x00d4ff, transparent: true, opacity: 0.14 });
-door.add(new THREE.LineSegments(new THREE.EdgesGeometry(door.geometry), doorEdgeMat));
+function makeDoor(sign, glow, edge, cssGlow, cssEdge, url, label) {
+  const mat = new THREE.MeshStandardMaterial({ color: 0x161634, metalness: 0.94, roughness: 0.14, emissive: glow, emissiveIntensity: 0 });
+  const mesh = new THREE.Mesh(doorGeo, mat);
+  mesh.position.set(0.42, 0.74, sign * 1.012);
+  car.add(mesh);
 
-// handle
-const handleMat = new THREE.MeshStandardMaterial({ color: 0x2a2a52, metalness: 0.9, roughness: 0.2, emissive: 0x00d4ff, emissiveIntensity: 0 });
-const handle = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.05, 0.024), handleMat);
-handle.position.set(-0.36, 0.31, 0.03);
-door.add(handle);
+  const edgeMat = new THREE.LineBasicMaterial({ color: edge, transparent: true, opacity: 0.14 });
+  mesh.add(new THREE.LineSegments(new THREE.EdgesGeometry(doorGeo), edgeMat));
 
-// halo glow behind the door (shows as a rim when hovered)
-const doorHaloMat = new THREE.MeshBasicMaterial({ color: 0xff2d95, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false });
-const doorHalo = new THREE.Mesh(new THREE.PlaneGeometry(1.55, 1.22), doorHaloMat);
-doorHalo.position.set(0.42, 0.74, 1.002);
-car.add(doorHalo);
+  const handleMat = new THREE.MeshStandardMaterial({ color: 0x2a2a52, metalness: 0.9, roughness: 0.2, emissive: edge, emissiveIntensity: 0 });
+  const handle = new THREE.Mesh(handleGeo, handleMat);
+  handle.position.set(-0.36, 0.31, sign * 0.03);
+  mesh.add(handle);
 
-// pink light that breathes on the door when hovered
-const doorLight = new THREE.PointLight(0xff2d95, 0, 3.5);
-doorLight.position.set(0.42, 1.1, 1.8);
-car.add(doorLight);
+  const haloMat = new THREE.MeshBasicMaterial({ color: glow, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false });
+  const halo = new THREE.Mesh(haloGeo, haloMat);
+  halo.position.set(0.42, 0.74, sign * 1.002);
+  if (sign < 0) halo.rotation.y = Math.PI;
+  car.add(halo);
 
-const doorTip = document.getElementById('dtip');
-const tipV = new THREE.Vector3(), tipN = new THREE.Vector3(), tipTo = new THREE.Vector3();
+  const light = new THREE.PointLight(glow, 0, 3.5);
+  light.position.set(0.42, 1.1, sign * 1.8);
+  car.add(light);
+
+  const d = { sign, url, mesh, mat, edgeMat, handleMat, haloMat, light, baseZ: sign * 1.012, hover: 0, tag: makeTag(label, cssEdge, cssGlow) };
+  mesh.userData.door = d;
+  return d;
+}
+
+// pink door → whow type · cyan door → whatarewedoing
+const doors = [
+  makeDoor( 1, 0xff2d95, 0x00d4ff, '#ff2d95', '#00d4ff', 'https://baseb-why.github.io/whow-type/', 'whow type'),
+  makeDoor(-1, 0x00d4ff, 0xff2d95, '#00d4ff', '#ff2d95', 'https://baseb-why.github.io/whatarewedoing/', 'whatarewedoing')
+];
 
 S.add(car);
 
@@ -372,11 +379,30 @@ let mx = 0, my = 0;
 /* NEW: door picking state */
 const ray = new THREE.Raycaster();
 const ndc = new THREE.Vector2(-2, -2);
-let mouseOn = false, doorHover = false, hoverAmt = 0, downPt = null, lastCur = '';
+let mouseOn = false, hoverDoor = null, downPt = null, lastCur = '';
+const occluders = [bLow, bUp, cab]; // car parts that can hide a door
+const pickTargets = [...doors.map(d => d.mesh), ...occluders];
+const fP = new THREE.Vector3(), fN = new THREE.Vector3(), fT = new THREE.Vector3();
 
 function setNDC(x, y) { ndc.set((x / innerWidth) * 2 - 1, -(y / innerHeight) * 2 + 1); }
-function hitsDoor() { ray.setFromCamera(ndc, cam); return ray.intersectObject(door, false).length > 0; }
-function goType() { window.location.href = DOOR_URL; }
+
+// how much a door's outward face points at the camera (1 = facing you dead-on)
+function facingDot(d) {
+  d.mesh.getWorldPosition(fP);
+  fN.set(0, 0, d.sign).applyQuaternion(car.quaternion);
+  fT.subVectors(cam.position, fP);
+  return fN.normalize().dot(fT.normalize());
+}
+
+// nearest thing under the cursor wins; a door only counts if it actually faces you
+function pickDoor() {
+  ray.setFromCamera(ndc, cam);
+  const hits = ray.intersectObjects(pickTargets, false);
+  if (!hits.length) return null;
+  const d = hits[0].object.userData.door;
+  if (!d) return null;                  // car body is in front → nothing is clickable
+  return facingDot(d) > 0.2 ? d : null; // door is turned away → not clickable
+}
 
 function down(x, y) { drag = true; autoR = false; clearTimeout(autoT); prev = { x, y }; vel = { x: 0, y: 0 }; downPt = { x, y }; }
 function move(x, y) {
@@ -392,11 +418,14 @@ function move(x, y) {
   prev = { x, y };
 }
 function up(x, y) {
-  // NEW: click (not drag) on the door → navigate
+  // NEW: click (not drag) on a visible door → go to that door's link
   if (downPt && x !== undefined) {
     const moved = Math.hypot(x - downPt.x, y - downPt.y);
-    setNDC(x, y);
-    if (moved < 7 && hitsDoor()) goType();
+    if (moved < 7) {
+      setNDC(x, y);
+      const d = pickDoor();
+      if (d) window.location.href = d.url;
+    }
   }
   downPt = null;
   drag = false; autoT = setTimeout(() => autoR = true, 2200);
@@ -405,13 +434,13 @@ function up(x, y) {
 canvas.addEventListener('mousedown', e => down(e.clientX, e.clientY));
 addEventListener('mousemove', e => move(e.clientX, e.clientY));
 addEventListener('mouseup', e => up(e.clientX, e.clientY));
-document.addEventListener('mouseleave', () => { mouseOn = false; doorHover = false; });
+document.addEventListener('mouseleave', () => { mouseOn = false; hoverDoor = null; });
 canvas.addEventListener('touchstart', e => { e.preventDefault(); mouseOn = false; down(e.touches[0].clientX, e.touches[0].clientY); }, { passive: false });
 canvas.addEventListener('touchmove', e => { e.preventDefault(); move(e.touches[0].clientX, e.touches[0].clientY); }, { passive: false });
 canvas.addEventListener('touchend', e => {
   const tch = e.changedTouches[0];
   up(tch.clientX, tch.clientY);
-  mouseOn = false; doorHover = false;
+  mouseOn = false; hoverDoor = null;
 });
 
 /* ── parallax ── */
@@ -419,6 +448,7 @@ const pEls = document.querySelectorAll('[data-s]');
 
 /* ── loop ── */
 const clk = new THREE.Clock();
+const tipV = new THREE.Vector3(), tipN = new THREE.Vector3(), tipTo = new THREE.Vector3();
 
 (function loop() {
   requestAnimationFrame(loop);
@@ -439,33 +469,36 @@ const clk = new THREE.Clock();
   // wheels
   wheels.forEach(w => { w.children[0].rotation.y += 0.04; w.children[1].rotation.y += 0.04; });
 
-  // NEW: door hover + glow (works even when the mouse is still, because the car rotates)
-  doorHover = (!drag && mouseOn) ? hitsDoor() : false;
-  hoverAmt += ((doorHover ? 1 : 0) - hoverAmt) * 0.14;
+  // NEW: doors — hover, glow, tag (raycast every frame so it works while the car spins)
+  hoverDoor = (!drag && mouseOn) ? pickDoor() : null;
   const dPulse = 0.7 + Math.sin(t * 6) * 0.3;
-  doorMat.emissiveIntensity = hoverAmt * 1.8 * dPulse;
-  doorEdgeMat.opacity = 0.14 + hoverAmt * 0.8;
-  handleMat.emissiveIntensity = hoverAmt * 1.6 * dPulse;
-  doorHaloMat.opacity = hoverAmt * 0.4 * dPulse;
-  doorLight.intensity = hoverAmt * 3.2 * dPulse;
-  door.position.z = doorBaseZ + hoverAmt * 0.06; // door pops out slightly on hover
+  doors.forEach(d => {
+    d.hover += ((d === hoverDoor ? 1 : 0) - d.hover) * 0.14;
+    const a = d.hover;
+    d.mat.emissiveIntensity = a * 1.8 * dPulse;
+    d.edgeMat.opacity = 0.14 + a * 0.8;
+    d.handleMat.emissiveIntensity = a * 1.6 * dPulse;
+    d.haloMat.opacity = a * 0.4 * dPulse;
+    d.light.intensity = a * 3.2 * dPulse;
+    d.mesh.position.z = d.baseZ + a * 0.06 * d.sign; // door pops outward on hover
 
-  // NEW: cursor becomes pointer over the door
-  const cur = drag ? 'grabbing' : (doorHover ? 'pointer' : 'grab');
+    // floating tag above the door (only when the door faces the camera)
+    d.mesh.getWorldPosition(tipV);
+    tipN.set(0, 0, d.sign).applyQuaternion(car.quaternion);
+    tipTo.subVectors(cam.position, tipV);
+    if (tipN.dot(tipTo) > 0 && a > 0.02) {
+      tipV.y += 0.7;
+      tipV.project(cam);
+      if (tipV.z < 1) {
+        d.tag.style.opacity = a.toFixed(3);
+        d.tag.style.transform = `translate(${((tipV.x * 0.5 + 0.5) * innerWidth).toFixed(1)}px,${((-tipV.y * 0.5 + 0.5) * innerHeight).toFixed(1)}px) translate(-50%,-115%)`;
+      } else d.tag.style.opacity = 0;
+    } else d.tag.style.opacity = 0;
+  });
+
+  // NEW: cursor becomes pointer over a door
+  const cur = drag ? 'grabbing' : (hoverDoor ? 'pointer' : 'grab');
   if (cur !== lastCur) { canvas.style.cursor = cur; lastCur = cur; }
-
-  // NEW: floating tag above the door (only when the door faces the camera)
-  door.getWorldPosition(tipV);
-  door.getWorldDirection(tipN);
-  tipTo.subVectors(cam.position, tipV);
-  if (tipN.dot(tipTo) > 0.15) {
-    tipV.y += 0.7;
-    tipV.project(cam);
-    if (tipV.z < 1) {
-      doorTip.style.opacity = hoverAmt;
-      doorTip.style.transform = `translate(${((tipV.x * 0.5 + 0.5) * innerWidth).toFixed(1)}px,${((-tipV.y * 0.5 + 0.5) * innerHeight).toFixed(1)}px) translate(-50%,-115%)`;
-    } else doorTip.style.opacity = 0;
-  } else doorTip.style.opacity = 0;
 
   // underglow pulse
   ugBlue.intensity = 4 + Math.sin(t * 3) * 2;
